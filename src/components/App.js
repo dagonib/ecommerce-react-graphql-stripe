@@ -6,8 +6,10 @@ import Signin from './Signin'
 import Signup from './Signup'
 import Checkout from './Checkout'
 import Navegation from './Navegation'
+import Brews from './Brews'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
               <Route component={Signin} path="/signin" />
               <Route component={Signup} path="/signup" />
               <Route component={Checkout} path="/checkout" />
+              <Route component={Brews} path="/:brandId" />
             </Switch>
           </div>
       </Fragment>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {Row, Col, Container, Card, CardDeck } from 'react-bootstrap'
 import Strapi from 'strapi-sdk-javascript/build/main'
 import { BsSearch } from "react-icons/bs";
+import Loader from './Loader'
 
 const apiurl = process.env.API_URL || 'http://localhost:1337';
 const strapi = new Strapi(apiurl);
@@ -10,6 +11,7 @@ const Home = () => {
 
     const [brands, setBrands] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
+    const [loadingBrands, setLoadingBrands] = useState(true)
 
     useEffect(() => {
         try {
@@ -29,10 +31,12 @@ const Home = () => {
                     }
                 })
                 setBrands(response.data.brands)
+                setLoadingBrands(false)
             }
             fetchData();
         } catch (err) {
             console.log(err)
+            setLoadingBrands(false)
         }       
     }, [])
 
@@ -53,7 +57,7 @@ const Home = () => {
         <Container>
             {/**Brands Search */}
             <Row className="justify-content-center">
-                <span class="input-group-text" id="basic-addon1"><BsSearch /></span>
+                <span className="input-group-text" id="basic-addon1"><BsSearch /></span>
                 <input
                     placeholder="Search"
                     id="searchField"
@@ -89,6 +93,16 @@ const Home = () => {
                         </Card>
                     ))}
                 </CardDeck>
+            </Row>
+            <Row className="d-flex justify-content-center mt-4">
+                {/*<Loader 
+                    visible={loadingBrands}
+                    type="ThreeDots"
+                    color="Blue"
+                >*/}
+                <Loader 
+                    show={loadingBrands}
+                />
             </Row>
         </Container>
     )
