@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {Row, Col, Container, Card, CardGroup, Button } from 'react-bootstrap'
 import { BsFillTrashFill } from "react-icons/bs";
 import Strapi from 'strapi-sdk-javascript/build/main'
-import { calculatePrice } from '../utils/index'
+import { calculatePrice, getCart, setCart } from '../utils/index'
 
 const apiurl = process.env.API_URL || 'http://localhost:1337';
 const strapi = new Strapi(apiurl);
@@ -38,6 +38,7 @@ const Brews = (props) => {
                 })
                 setBrews(response.data.brand.brews)
                 setBrand(response.data.brand.name)
+                setCartItems(getCart())
             }
             fetchData();
         } catch(err) {
@@ -56,10 +57,12 @@ const Brews = (props) => {
                 quantity: 1
             })
             setCartItems(updatedItems)
+            setCart(updatedItems)
         } else {
             const updatedItems = [...cartItems]
             updatedItems[alreadyInCart].quantity += 1
             setCartItems(updatedItems)
+            setCart(updatedItems)
         }
     }
 
@@ -68,6 +71,7 @@ const Brews = (props) => {
             item => item._id !== itemToDeleteId
         )
         setCartItems(filteredItems)
+        setCart(filteredItems)
     }
 
     return (
@@ -121,16 +125,13 @@ const Brews = (props) => {
                             {cartItems.length === 0 && (
                                 <Card.Text>Please select some items</Card.Text>
                             )}
-                            <Card.Text>Total: ${calculatePrice(cartItems)}</Card.Text>
+                            <Card.Text>Total: {calculatePrice(cartItems)}€</Card.Text>
                             <Card.Link href="/checkout">Checkout</Card.Link>
                         </Card.Body>
 
                     </Card>
                 </Col>
-            </Row>
-
-            
-            
+            </Row>           
         </Container>
     )
 }
