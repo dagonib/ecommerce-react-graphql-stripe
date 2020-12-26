@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import ToastMessage from './ToastMessage'
+import Strapi from 'strapi-sdk-javascript/build/main'
+
+const apiurl = process.env.API_URL || 'http://localhost:1337';
+const strapi = new Strapi(apiurl);
 
 const Signup = () => {
 
@@ -9,6 +13,7 @@ const Signup = () => {
     const [password, setPassword] = useState('')
     const [toast, setToast] = useState(false)
     const [toastMessage, setToastMessage] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const handleChangeUsername= (event) => {
         setUsername(event.target.value)
@@ -20,15 +25,35 @@ const Signup = () => {
         setPassword(event.target.value)
     }
 
-    const handleSubmit = event => {
+    const handleSubmit = async (event) => {
         event.preventDefault()
 
         if(isFormEmpty(username, email, password)) {
             showToast('Fill in all fields!')
+            return
         }
 
-        console.log("submitted")
+        /**Submitted the Form */
+        try {
+            /**Set loading true */
+            setLoading(true)
+            
+            /**make request to register user with Strapi */
+            const response = await strapi.register(username, email, password)
+            /**set loading false */
+            setLoading(false)
+            /**put token (to manage use session) in local storage */
+            console.log(response)
+            /**redirect user to home page */
+        } catch (err) {
+            /**set loading to false */
+            setLoading(false)
+            /** show error message with toast message */
+            showToast(err)
+        }
     }
+
+    /**const redirectUser = path => props.history.pushState(path)*/
 
     const isFormEmpty = (username, email, password) => {
         return !username || !email || !password
@@ -51,7 +76,7 @@ const Signup = () => {
                     <Form
                         onSubmit={handleSubmit}
                     >
-                        <Form.Group controlId="formBasicEmail">
+                        <Form.Group controlId="formBasicUsername">
                             <Form.Control 
                                 name="username"
                                 type="text" 
